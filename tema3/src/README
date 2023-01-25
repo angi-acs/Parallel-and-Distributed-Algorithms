@@ -1,0 +1,32 @@
+Corina-Angi Bălănescu
+336CA
+
+Fiecare dintre cei 4 coordonatori citește din fișierul alocat lui, apoi trimite
+fiecărui worker din clusterul său un mesaj pentru a-l anunța cine îi este
+coordonator. Pentru a stoca topologia am folosit un vector cu o dimensiune egală
+cu numărul total de procese, astfel poziția în vector reprezintă rank-ul procesului.
+Vectorul este împărțit astfel: primele 4 poziții (care corespund coordonatorilor)
+conțin numărul de workeri din cluster, iar celelalte părintele workerului respectiv.
+Aflarea topologiei de către toate procesele se desfășoară în felul următor:
+coordonatorul 0 trimite către 3 vectorul său (completat în dreptul lui cu numărul 
+de workeri și în dreptul workerilor cu 0 ca părinte). Coordonatorul 3 își actualizează
+vectorul cu informațiile noi primite și îl trimite mai departe. Și tot așa până se
+ajunge la capătul legăturii, adică la coordonatorul 1, de unde se reia tot procesul
+în sens invers. În momentul în care toți coordonatorii dețin toată topologia, aceștia
+trimit vectorul și workerilor săi, ca în cele din urmă fiecare proces să afișeze
+topologia.
+
+Doar procesul 0 îl citește pe N din lista de argumente și îl trimite mai departe 
+celorlalți coordonatori, care la rândul lor îl vor trimite workerilor. Fiecare 
+proces își alocă un vector de N elemente, pe care îl primesc mai apoi completat 
+(de către 0 cu formula din enunț) de la părintele lor sau de la procesul din stânga 
+(așa cum e reprezentat inelul în figură).
+Am echilibrat calculele pentru fiecare worker utilizând împărțirea:
+start = id * N / P
+end = min((id + 1) * N / P, N),
+unde id reprezintă rank-ul procesului (- 4 doarece coordonatorii nu muncesc)
+     P reprezintă numărul total de workeri.
+Prin urmare, fiecare worker se ocupă de un număr egal de poziții din vector.
+Fiecare coordonator primește de la workerii săi vectorul completat, își
+actualizează informațiile și îl trimite mai departe, începând de la 1 către 0,
+astfel încât procesul 0 are vectorul final și îl afișează.

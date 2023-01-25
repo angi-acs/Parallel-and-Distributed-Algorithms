@@ -1,0 +1,30 @@
+Corina-Angi Bălănescu
+336CA
+
+Fișiere sursă: - tema1.c - implementarea efectivă a temei
+               - tema1.h - definirea structurilor și a unor funcții auxiliare
+               - queue.h - o implementare în C a unei cozi
+
+Încep prin a sorta fișierele în ordine descrescătoare după dimensiune, folosindu-mă
+de funcția qsort din C, astfel încât un fișier care are o dimensiune mai mare să nu fie
+lăsat la final când celelalte mappere au terminat, ci să fie procesat primul în timp ce
+celelalte mappere parsează în paralel mai multe fișiere mai mici.
+Creez thread-urile cu 2 for-uri consecutive (nicio altă linie de cod între ele), mapperii 
+și reducerii având funcții (mapF, respectiv redF) și argumente separate (structurile mapArg, 
+respectiv redArg). Join le dau împreună, în același for.
+Mă asigur că reducerii încep după ce au terminat toți mapperii printr-o barieră. Am inițializat
+bariera cu numărul mappers + reducers, în mapF am plasat-o la finalul funcției, iar în redF la 
+început (adică chiar dacă toți reducerii ajung la barieră, aceasta se va debloca doar în momentul 
+în care toți mapperii termină de procesat fișierele).
+
+mapF: Mă folosesc de o coadă pentru a asigna dinamic fișierele, cât timp coada nu este goală,
+      un mapper va prelua un fișier. Pentru a evita un race condition, am folosit un mutex
+      pe verificarea dimensiunii cozii, pe dequeue și pe deschiderea fișierului preluat.
+      Verific fiecare valoare citită și în caz afirmativ o pun în lista parțială corespunzătoare
+      (în cazul meu, un vector 3D). Verificarea o fac folosind algoritmul de căutare binară pentru
+      bază și o funcție de ridicare la putere mai eficientă pentru tipul de date INT (sursă
+https://cstheory.stackexchange.com/questions/2077/how-to-check-if-a-number-is-a-perfect-power-in-polynomial-time)
+
+redF: Fiecare reducer combină listele parțiale ale puterii de care este responsabil (id reducer + 2),
+      numără elementele unice din lista obținută, apoi scrie în fișier. Pentru deschiderea fișierului
+      am folosit un mutex pentru a evita un race condition.

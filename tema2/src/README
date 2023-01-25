@@ -1,0 +1,26 @@
+Corina-Angi Bălănescu
+336CA
+
+În Tema2 deschid fișierele, creez un pool de P thread-uri pentru produse și pornesc alte
+P thread-uri pentru citirea din orders (level 1).
+
+OrderThread reprezintă un thread care se ocupă de citirea din fișier a unei comenzi la un
+moment dat (după ce va termina de procesat comanda respectivă, va citi următoarea comandă la
+care a ajuns bufferedReader-ul).
+Pentru fiecare comandă adaugă în pool un număr de task-uri egal cu numărul de produse din
+respectiva comandă (level 2). Dacă acest număr este diferit de 0 și toate produsele au fost
+marcate ca shipped, atunci și acea comandă va fi marcată ca shipped. Fiecare task adăugat
+întoarce un rezultat care va fi stocat într-o listă. Dacă un singur produs lipsește din acea
+listă, comanda nu va fi shipped.
+
+ProductTask reprezintă un task din pool. Acesta va căuta în fișier, după id-ul comenzii,
+un singur produs. Știind numărul total de produse dintr-o comandă, când un task este adăugat
+în pool, va primi ca parametru numărul produsului pe care trebuie să îl caute. Astfel, nu trebuie
+să verificăm în prealabil dacă un thread s-a ocupat deja de acel produs (sau de acea comandă).
+În cazul în care produsul este găsit va fi marcat ca shipped (ProductTask returnează true, în caz
+contrar returnează false).
+Un thread se ocupă de un singur produs din orice comandă în funcție de disponibilitate,
+prin urmare toate thread-urile au o muncă echilibrată.
+
+P.S. Nu știu de ce îmi tot pică testul 0 (doar testul 0) pe VmChecker pe Moodle,
+     local merge sigur (de altfel, dacă nu ar fi corect, nu ar trece celelalte)
